@@ -1,1 +1,99 @@
+#!/bin/bash
+
+###########################
+# Author : Sai Kumar
+# creation Date : 30-Mar-2025
+# versio : v1
+# This Script will report the AWS resource Usages.
+############################
+
+##### LIST ALL SERVICES ######
+#AWS S3
+#AWS EC2
+#AWS LAMBDA
+#AWS IAM
+#############################
+
+# set -x 
+set -e
+set -o pipefail
+
+############################# S3 BUCKETS ###############################
+
+#list S3 Buckets
+echo "Successfully Printed list of S3 Bucket"
+
+# Basic Command --> aws s3 ls
+          
+# Intermediate Way Command to do it ---> aws s3api list-buckets --query 'Buckets[*].Name' --output table > /home/ec2-user/Resources_Status.txt
+
+# Adcanced Way Command Scripting --->
+
+#$$$$$$$$$$$$$$$$$$$ Adcanced Way Command Scripting #$$$$$$$$$$$$$$$$$$$$
+
+S3_BUCKETS=$(aws s3api list-buckets --query 'Buckets[*].Name' --output text) # $(..) --> "Capture" the Command Output from AWS CLI & "Stores" the whether Exist Values (or) Empty Values in the "S3_BUCKETS".
+
+if [ -z "$S3_BUCKETS" ]; then # -z checks the empty value only.If empty is there,If Condition will be "TRUE".Otherwise, go to directly echo Statement.
+    S3_BUCKETS="None" # If-Condition is TRUE. So,Assign "None" value to Store in "S3_BUCKETS"in this Line Only.
+fi
+echo -e "S3 Buckets:\n$S3_BUCKETS" > /home/ec2-user/Resources_Status.txt # Display the results whether it has Exist Value (or) Empty Value Exists.
+
+############################ COMPLETED ##################################
+
+############################# EC2 INSTANCES #############################
+
+#list EC2 Instances
+echo "Successfully Printed list of Ec2 Instances"
+
+# Basic Command --> aws ec2 describe-instances
+
+# Here,Intermediate Way is Enough to display the Output --->
+aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId,InstanceType,State.Name,PublicIpAddress,PrivateIpAddress]' --output table >> /home/ec2-user/Resources_Status.txt
+
+############################ COMPLETED ###################################
+
+######################### Fetch Lambda Functions #########################
+
+#list AWS  Lambda Functions
+echo "Successfully Printed list of Lambda Functions"
+
+# Basic Command Scripting ---> aws lambda list-functions
+# Intermediate Way Command Scripting ---> aws lambda list-functions --query 'Functions[*].FunctionName' --output table >> /home/ec2-user/Resources_Status.txt
+
+# Adcanced Way Command Scripting --->
+
+#$$$$$$$$$$$$$$$$$$$ Adcanced Way Command Scripting #$$$$$$$$$$$$$$$$$$$$$
+
+LAMBDA_FUNCTIONS=$(aws lambda list-functions --query 'Functions[*].FunctionName' --output text) # $(..) --> "Capture" the Command Output from AWS CLI & "Stores" the whether Exist Values (or) Empty Values in the "LAMBDA_FUNCTIONS".
+
+if [ -z "$LAMBDA_FUNCTIONS" ]; then # -z checks the empty value only.If empty is there,If Condition will be "TRUE".Otherwise, go to directly echo Statement.
+     LAMBDA_FUNCTIONS="None" # If-Condition is TRUE. So,Assign "None" value to Store in "LAMBDA_FUNCTIONS"in this Line Only.
+fi
+echo -e "Lambda Functions:\n$LAMBDA_FUNCTIONS" >> /home/ec2-user/Resources_Status.txt # Display the results whether ithas Exist Value (or) Empty Value Exists.
+
+############################ COMPLETED ###################################
+
+
+############################ Fetch IAM Users #############################
+
+#list IAM Users
+echo "Successfully Printed list of IAM users"
+
+# Basic Command Scripting ---> aws iam list-users
+# # Intermediate Way Command Scripting ---> aws iam list-users --query 'Users[*].UserName' --output table >> /home/ec2-user/Resources_Status.txt
+
+# Advanced Way  Command Scripting --->
+
+#$$$$$$$$$$$$$$$$$$$$ Advanced Way  Command Scripting  #$$$$$$$$$$$$$$$$$$$$
+
+IAM_USERS=$(aws iam list-users --query 'Users[*].UserName' --output text) # $(..) --> "Capture" the Command Output from AWS CLI & "Stores" the whether Exist Values (or) Empty Values in the "IAM_USERS".
+
+if [ -z "$IAM_USERS" ]; then # -z checks the empty value only.If empty is there,If Condition will be "TRUE".Otherwise, go to directly echo Statement.
+    IAM_USERS="None" # If-Condition is TRUE. So,Assign "None" value to Store in "IAM_USERS"in this Line Only..
+fi
+echo -e "IAM Users:\n$IAM_USERS" >> /home/ec2-user/Resources_Status.txt # Display the results whether it has Exist Value (or) Empty Value Exists.
+
+echo "Go & Check Your File --> /home/ec2-user/Resources_Status.txt"
+
+############################# COMPLETED ###################################
 
